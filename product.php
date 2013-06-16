@@ -33,10 +33,11 @@ foreach($roads as $road){
 		$measurementCount = sizeof($measurements);
 		if($measurementCount > 0){
 			if($measurementCount == 1){
-				insertToDb($road['osm_id'], $coord, $measurements[0]['properties']['phenomenons']['Speed']['value'], $measurementCount);
+				insertToDb($road['osm_id'], $coord, $measurements[0]['properties']['phenomenons']['Speed']['value'],$measurements[0]['properties']['phenomenons']['CO2']['value'], $measurementCount);
 			} 
 			else if($measurementCount > 1){
 				$speed = 0;
+				$co2 = 0;
 				$sumDi = 0;
 				foreach($measurements as $m){
 					$sumDi += 1/getDistance($m['geometry']['coordinates'][1], $m['geometry']['coordinates'][0], $coord[1], $coord[0]);
@@ -48,9 +49,14 @@ foreach($roads as $road){
 							if($di > 0){							
 								$speed += (1/$di) * ($m['properties']['phenomenons']['Speed']['value']/$sumDi);
 							}
+						}if(isset($m['properties']['phenomenons']['CO2']['value'])){
+							$di = getDistance($m['geometry']['coordinates'][1], $m['geometry']['coordinates'][0], $coord[1], $coord[0]);
+							if($di > 0){							
+								$co2 += (1/$di) * ($m['properties']['phenomenons']['CO2']['value']/$sumDi);
+							}
 						}
 					}
-					insertToDb($road['osm_id'], $coord, $speed, $measurementCount);
+					insertToDb($road['osm_id'], $coord, $speed, $co2, $measurementCount);
 				}
 				
 
@@ -61,8 +67,8 @@ foreach($roads as $road){
 	
 }
 
-function insertToDb($osm_id, $coords, $speed, $count){
-$query = "INSERT into tracks(speed, measurements, osm_id, the_geom) VALUES(".$speed.", ".$count.", ".$osm_id.", ST_SetSRID(ST_MakePoint(".$coords[0].",".$coords[1]."), 4326))";
+function insertToDb($osm_id, $coords, $speed, $co2, $count){
+$query = "INSERT into tracks(speed, co2, measurements, osm_id, the_geom) VALUES(".$speed.", ".$co2.", ".$count.", ".$osm_id.", ST_SetSRID(ST_MakePoint(".$coords[0].",".$coords[1]."), 4326))";
 query($query);
 }
 
