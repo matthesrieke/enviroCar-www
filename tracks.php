@@ -2,7 +2,7 @@
 
 require_once('db_conf.php');
 
-	$query = 'SELECT ST_X(the_geom) as lat,ST_Y(the_geom) as lon, speed, osm_id from tracks';
+	$query = 'SELECT ST_X(the_geom) as lat,ST_Y(the_geom) as lon, speed, osm_id from tracks order by osm_id, road_segment';
 	$result = query($query);
 	
 	$json = array();

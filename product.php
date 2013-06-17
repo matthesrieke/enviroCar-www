@@ -26,6 +26,7 @@ foreach($trackIds as $trackId){
 
 foreach($roads as $road){
 	$road = splitMultiline($road);
+	$segment = 0;
 	foreach($road['coordinates'] as $coord){
 		$measurements = array();
 		foreach($tracks as $track){
@@ -37,7 +38,7 @@ foreach($roads as $road){
 		$measurementCount = sizeof($measurements);
 		if($measurementCount > 0){
 			if($measurementCount == 1){
-				insertToDb($road['osm_id'], $coord, $measurements[0]['properties']['phenomenons']['Speed']['value'],$measurements[0]['properties']['phenomenons']['CO2']['value'], $measurementCount);
+				insertToDb($road['osm_id'], $coord, $measurements[0]['properties']['phenomenons']['Speed']['value'],$measurements[0]['properties']['phenomenons']['CO2']['value'], $measurementCount, $segment);
 			} 
 			else if($measurementCount > 1){
 				$speed = 0;
@@ -60,19 +61,20 @@ foreach($roads as $road){
 							}
 						}
 					}
-					insertToDb($road['osm_id'], $coord, $speed, $co2, $measurementCount);
+					insertToDb($road['osm_id'], $coord, $speed, $co2, $measurementCount, $segment);
 				}
 				
 
 			}
 		}
 		$measurements = null;
+		$segment += 1;
 	}
 	
 }
 
-function insertToDb($osm_id, $coords, $speed, $co2, $count){
-$query = "INSERT into tracks(speed, co2, measurements, osm_id, the_geom) VALUES(".$speed.", ".$co2.", ".$count.", ".$osm_id.", ST_SetSRID(ST_MakePoint(".$coords[0].",".$coords[1]."), 4326))";
+function insertToDb($osm_id, $coords, $speed, $co2, $count, $segment){
+$query = "INSERT into tracks(speed, co2, measurements, osm_id, the_geom, road_segment) VALUES(".$speed.", ".$co2.", ".$count.", ".$osm_id.", ST_SetSRID(ST_MakePoint(".$coords[0].",".$coords[1]."), 4326),".$segment.")";
 query($query);
 }
 
