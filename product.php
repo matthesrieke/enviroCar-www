@@ -6,8 +6,8 @@ $distanceValue = 20; //meters
 query("DELETE from tracks");
 
 //$roadQuery = "select ST_AsText(the_geom) as multiline,* from roads where name like 'Weseler Straße' and (ref = 'B 219' or ref = 'B 54' or ref = 'B 54;B 219')";
-//$roadQuery = "SELECT ST_AsText(the_geom) as multiline,* FROM roads WHERE the_geom && ST_MakeEnvelope(7.604229,51.973038, 7.639248,51.945746, 4326);";
-$roadQuery = "SELECT ST_AsText(the_geom) as multiline,* FROM roads WHERE the_geom && ST_MakeEnvelope(7.55582,51.979171, 7.680447, 51.930612, 4326);";
+//$roadQuery = "SELECT ST_AsText(the_geom) as multiline,* FROM roads WHERE the_geom && ST_MakeEnvelope(7.55582,51.979171, 7.680447, 51.930612, 4326);";
+$roadQuery = "SELECT ST_AsText(the_geom) as multiline,* FROM roads WHERE the_geom && ST_MakeEnvelope(7.55582,51.979171, 7.680447, 51.930612, 4326) and type != 'cycleway' and type != 'path' and type != 'footway' and type != 'pedestrian' and type != 'unclassified'";
 
 $roads = query($roadQuery);
 $roads = pg_fetch_all($roads);
