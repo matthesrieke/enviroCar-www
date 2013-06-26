@@ -9,18 +9,21 @@ $roadQuery = "SELECT ST_AsText(the_geom) as multiline,* FROM roads WHERE the_geo
 $roads = query($roadQuery);
 $roads = pg_fetch_all($roads);
 
-//Track IDs from enviroCar
-//TODO: fetch tracks dynamically within a specific area (currently no query available)
-$trackIds = array('51c9bb64e4b0fe5a04eaba9c', '51c9b249e4b0fe5a04ea83cb', '51c980c8e4b05956bbffcefd', '51c97d05e4b0fe5a04e9e733', '51c97c79e4b0fe5a04e9df40', '51c97ab5e4b0fe5a04e9dc74', '51c97647e4b0fd06343213f5', '51c97226e4b0fd06343211aa', '51c970ede4b0fd0634320fab', '51c97075e4b0fd0634320dbc');
 $tracks = array();
 
-
-//Fetch the tracks
-foreach($trackIds as $trackId){
-	$track = get_request('http://giv-car.uni-muenster.de:8080/dev/rest/tracks/'.$trackId);
-	if($track['status'] == 200){
-		$track = json_decode($track['response'],true);
-		array_push($tracks, $track);
+//Get all tracks within the requested boundingbox from enviroCar
+$tracksInBB = get_request('https://giv-car.uni-muenster.de/stable/rest/tracks?bbox=7.55582,51.930612,7.680447,51.979171');
+if($tracksInBB['status'] == 200){
+	$tracksInBB = json_decode($tracksInBB['response'], true);
+	
+	//Fetch tracks from enviroCar
+	foreach($tracksInBB['tracks'] as $trackId){
+		echo $trackId['id'].' ';
+		$track = get_request('http://giv-car.uni-muenster.de:8080/dev/rest/tracks/'.$trackId['id']);
+		if($track['status'] == 200){
+			$track = json_decode($track['response'],true);
+			array_push($tracks, $track);
+		}
 	}
 }
 
