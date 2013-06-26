@@ -3,19 +3,19 @@ require_once('db_conf.php');
 
 $distanceValue = 20; //meters
 
-query("DELETE from tracks");
-
-//$roadQuery = "select ST_AsText(the_geom) as multiline,* from roads where name like 'Weseler Straße' and (ref = 'B 219' or ref = 'B 54' or ref = 'B 54;B 219')";
-//$roadQuery = "SELECT ST_AsText(the_geom) as multiline,* FROM roads WHERE the_geom && ST_MakeEnvelope(7.55582,51.979171, 7.680447, 51.930612, 4326);";
-$roadQuery = "SELECT ST_AsText(the_geom) as multiline,* FROM roads WHERE the_geom && ST_MakeEnvelope(7.55582,51.979171, 7.680447, 51.930612, 4326) and type != 'cycleway' and type != 'path' and type != 'footway' and type != 'pedestrian' and type != 'unclassified'";
+//Select osm roads (excluding small roads like footways)
+$roadQuery = "SELECT ST_AsText(the_geom) as multiline,* FROM roads WHERE the_geom && ST_MakeEnvelope(7.55582,51.979171, 7.680447, 51.930612, 4326) and type != 'cycleway' and type != 'path' and type != 'footway' and type != 'pedestrian' and type != 'unclassified' and type != 'steps' and type != 'track' and type != 'service'";
 
 $roads = query($roadQuery);
 $roads = pg_fetch_all($roads);
 
-$trackIds = array('51bb0ec3e4b0e636c1b25e5d','51b34f75e4b01748637f310d','51b3200ce4b01748637ece27','51b3200ae4b01748637ecb7b');
+//Track IDs from enviroCar
+//TODO: fetch tracks dynamically within a specific area (currently no query available)
+$trackIds = array('51c9bb64e4b0fe5a04eaba9c', '51c9b249e4b0fe5a04ea83cb', '51c980c8e4b05956bbffcefd', '51c97d05e4b0fe5a04e9e733', '51c97c79e4b0fe5a04e9df40', '51c97ab5e4b0fe5a04e9dc74', '51c97647e4b0fd06343213f5', '51c97226e4b0fd06343211aa', '51c970ede4b0fd0634320fab', '51c97075e4b0fd0634320dbc');
 $tracks = array();
 
 
+//Fetch the tracks
 foreach($trackIds as $trackId){
 	$track = get_request('http://giv-car.uni-muenster.de:8080/dev/rest/tracks/'.$trackId);
 	if($track['status'] == 200){
@@ -24,11 +24,21 @@ foreach($trackIds as $trackId){
 	}
 }
 
+$currentRoad = 0;
+$roadCount = sizeof($roads);
+
+//Iterate over all roads
 foreach($roads as $road){
+	echo 'Road: '.$currentRoad.'/'.$roadCount.' ';
+	$currentRoad += 1;
 	$road = splitMultiline($road);
 	$segment = 0;
+	
+	//Iterate over all road segments of a road
 	foreach($road['coordinates'] as $coord){
 		$measurements = array();
+		
+		//Calculate the distance for every measurement
 		foreach($tracks as $track){
 			foreach($track['features'] as $trackFeature){
 				$distance = getDistance($trackFeature['geometry']['coordinates'][1], $trackFeature['geometry']['coordinates'][0], $coord[1], $coord[0]);
@@ -36,17 +46,25 @@ foreach($roads as $road){
 			}
 		}
 		$measurementCount = sizeof($measurements);
+		//If there are nearby measurements, start aggregating
 		if($measurementCount > 0){
+		
+			//if only one measurement exists it can be directly inserted into the database
 			if($measurementCount == 1){
 				insertToDb($road['osm_id'], $coord, $measurements[0]['properties']['phenomenons']['Speed']['value'],$measurements[0]['properties']['phenomenons']['CO2']['value'], $measurementCount, $segment);
 			} 
+			
 			else if($measurementCount > 1){
 				$speed = 0;
 				$co2 = 0;
 				$sumDi = 0;
+				
+				//Calculate the sum of distances 
 				foreach($measurements as $m){
 					$sumDi += 1/getDistance($m['geometry']['coordinates'][1], $m['geometry']['coordinates'][0], $coord[1], $coord[0]);
 				}
+				
+				//Calculate Inverse distance weighting
 				if($sumDi > 0){
 					foreach($measurements as $m){
 						if(isset($m['properties']['phenomenons']['Speed']['value'])){
@@ -61,6 +79,7 @@ foreach($roads as $road){
 							}
 						}
 					}
+					//Insert aggregated values into the database
 					insertToDb($road['osm_id'], $coord, $speed, $co2, $measurementCount, $segment);
 				}
 				
@@ -73,13 +92,16 @@ foreach($roads as $road){
 	
 }
 
+//Inserts the aggregated values into the database. If the values road segment already exists, the values will be updated
 function insertToDb($osm_id, $coords, $speed, $co2, $count, $segment){
-$query = "INSERT into tracks(speed, co2, measurements, osm_id, the_geom, road_segment) VALUES(".$speed.", ".$co2.", ".$count.", ".$osm_id.", ST_SetSRID(ST_MakePoint(".$coords[0].",".$coords[1]."), 4326),".$segment.")";
+$query = "UPDATE tracks SET speed = ".$speed.", co2= ".$co2.", measurements = ".$count." WHERE osm_id = ".$osm_id." AND road_segment = ".$segment.";
+INSERT into tracks(speed, co2, measurements, osm_id, the_geom, road_segment) 
+	SELECT ".$speed.", ".$co2.", ".$count.", ".$osm_id.", ST_SetSRID(ST_MakePoint(".$coords[0].",".$coords[1]."), 4326),".$segment." WHERE NOT EXISTS (SELECT 1 from tracks where osm_id = ".$osm_id." AND road_segment=".$segment.");";
 query($query);
 }
 
 
-
+//Splits the OSM Multiline into single points
 function splitMultiline($road){
 	$coordinates = substr($road["multiline"], 17, -2);
 	$coordinates = explode(",", $coordinates);
@@ -106,6 +128,7 @@ function getDistance($latitude1, $longitude1, $latitude2, $longitude2) {
     return $d*1000;  
 } 
 
+//HTTP get request (used to fetch the enviroCar data)
 function get_request($uri){
     $ch = curl_init($uri);
 
