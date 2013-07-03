@@ -22,7 +22,25 @@
     <!-- Favicons -->
     <link rel="shortcut icon" href="./ico/favicon.png" type="image/png" />
     <link rel="icon" href="./ico/favicon.png" type="image/png" />
+    <style>
+        h2{
+            padding-top: 20px;
+        }
+        
+        pre{
+            font-family: Monaco, "Bitstream Vera Sans Mono", "Lucida Console", Terminal, monospace;
+            color: #000;
+            font-size: 12px;
+            margin-top: 10px;
+            padding-top: 10px;
+            background: #FDFEFB;
+            border-radius: 4px;
+            border: 1px solid #D7D8C8;
+            overflow: auto;
+            margin-right: 20px;
+        }
 
+    </style>
   </head>
 
   <body>
@@ -39,6 +57,64 @@
     <div class="container leftband" style="padding-bottom: 20px">
       <h1>enviroCar-Website Documentation</h1>
       <hr>
+      
+      <h2>About</h2>
+      <ul class="customLi" style="max-width: 500px">
+        <li><a href="#installation">Installation</a></li>
+        <li><a href="#structure">File Structure</a></li>
+        <li><a href="#outlook">Outlook</a></li>
+      </ul>
+      
+      <h2><a name="installation" class="anchor"></a>Installation</h2>  
+      
+      <h2><a class="anchor" name="structure"></a>File Structure</h2>
+      
+      <h2><a class="anchor" name="aggregation"></a>Data aggregation</h2>
+      <div style="padding-left: 20px">
+      <b>What does the algorithm currently do:</b><br>
+      <ul>
+        <li>Iterating over all OpenStreetMap road-coordinates within a defined bounding-box</li>
+        <li>Downloading all tracks from enviroCar within a bounding-box</li>
+        <li>Calculating the IDW for all measurements within a distance < 20m</li>
+        <li>Storing the aggregated values within a PostGIS database</li>
+        <li>Export as GeoJSON</li>
+      </ul>
+      <br>
+        
+      <b>Setup:</b><br>
+      The data-aggregation algorithm is located within the branch: <i>data-aggregation</i>.<br>
+      For the data aggregation, you will need a PostgreSQL database with PostGIS extension. <br>
+      <pre>
+        sudo apt-get install php5-pgsql
+        sudo apt-get install postgresql-9.1
+        sudo apt-get install postgresql-9.1-postgis
+        sudo apt-get install postgresql pgadmin3
+      </pre>
+      <br>
+        The SQL files to create the tables can be found in the folder sql. As the aggregation is based on OpenStreetMap roads, you have to insert the roads for your preferred region.
+        Download possible on: <a href="http://download.geofabrik.de/">Geofabrik</a> (download as .shp files (route.shp))<br>
+
+    In addition to that, you have to create a config file (<i>db_conf.php</i>) including the server-credentials and the url (this file is ignored by GitHub). The file has to include:<br>
+    <pre>
+        $dbhost = 'YOUR_SERVER_URL';
+        $dbname = 'YOUR_DATABASE_NAME';
+        $dbuser = 'YOUR_USER_NAME';
+        $dbpw = 'YOUR_PASSWORD';
+    </pre>
+    <br>
+    The algorithm can be started with the file <i>product.php</i>.<br><br>
+    
+    <b>Todo/Improvements:</b><br>
+    <ul>
+        <li>Distribute the caluclation in several threads (one for each road?)</li>
+        <li>Load only measurements near the road segements instead of the complete track</li>
+        <li>Pagination if there are more than 100 tracks</li>
+        <li>Implement Kriging</li>
+        <li>Add other phenomenons</li>
+    </ul>
+
+      </div>
+      <h2><a name="outlook" class="anchor"></a>Outlook</h2>
       <br>
     </div>
 
