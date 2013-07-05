@@ -19,7 +19,7 @@ if($tracksInBB['status'] == 200){
 	//Fetch tracks from enviroCar
 	foreach($tracksInBB['tracks'] as $trackId){
 		echo $trackId['id'].' ';
-		$track = get_request('http://giv-car.uni-muenster.de:8080/dev/rest/tracks/'.$trackId['id']);
+		$track = get_request('https://giv-car.uni-muenster.de/stable/rest/tracks/'.$trackId['id']);
 		if($track['status'] == 200){
 			$track = json_decode($track['response'],true);
 			array_push($tracks, $track);
