@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en">
   <head>
     <meta charset="utf-8">
@@ -59,14 +59,38 @@
       <hr>
       
       <h2>About</h2>
+      This document describes the work done for the <a href="http://envirocar.org/" target="_blank">enviroCar</a> project.<br>
+      
       <ul class="customLi" style="max-width: 500px">
+        <li><a href="#developers">Developers</a></li>
         <li><a href="#installation">Installation</a></li>
         <li><a href="#structure">File Structure</a></li>
         <li><a href="#aggregation">Data aggregation</a></li>
         <li><a href="#outlook">Outlook</a></li>
       </ul>
       
-      <h2><a name="installation" class="anchor"></a>Installation</h2>  
+      <h2><a name="developers" class="anchor"></a>Developers</h2> 
+      Dennis Wilhelm (d.wilhelm@uni-muenster.de) <br>
+      Dustin Demuth (dustin.demuth@uni-muenster.de) <br>
+      Stephanie Walter (stephanie.walter@uni-muenster.de) <br>
+      Friedrich Müller (f_muel25@uni-muenster.de) <br>
+      Oraib Megdadi (o_megd01@uni-muenster.de) <br>
+      
+      <h2><a name="installation" class="anchor"></a>Installation</h2> 
+        To run the website on your own you have to install a webserver. We suggest to use an <a href="http://httpd.apache.org/" target="_blank">Apache2</a> webserver with a <a href="http://php.net/manual/en/book.apache.php" target="_blank">PHP5</a> extension. <br>
+        
+        For ubuntu servers, you can use the following commands:
+        <pre>
+            sudo apt-get install apache2
+            sudo apt-get install php5
+        </pre>
+        <br>
+        For the interaction with the RESTful server, you have to install the <a href="http://curl.haxx.se/" target="_blank">cURL</a> extension to php.<br>
+        <pre>
+            sudo apt-get install php5-curl
+        </pre>
+        <br>
+
       
       <h2><a class="anchor" name="structure"></a>File Structure</h2>
       
