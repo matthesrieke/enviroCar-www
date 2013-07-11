@@ -67,15 +67,16 @@
         <li><a href="#structure">File Structure</a></li>
         <li><a href="#aggregation">Data aggregation</a></li>
         <li><a href="#outlook">Outlook</a></li>
+        <li><a href="#serverinformation">Server information</a></li>
       </ul>
       
       <h2><a name="developers" class="anchor"></a>Developers</h2> 
       <ul>
-      <li>Dennis Wilhelm (d.wilhelm@uni-muenster.de)(<a href="https://github.com/dwilhelm89" target="_blank">@Github</a>)</li>
-      <li>Dustin Demuth (dustin.demuth@uni-muenster.de) (<a href="https://github.com/dustindemuth" target="_blank">@Github</a>) </li>
-      <li>Stephanie Walter (stephanie.walter@uni-muenster.de) (<a href="https://github.com/StephanieWalter" target="_blank">@Github</a>) </li>
-      <li>Friedrich Müller (f_muel25@uni-muenster.de) (<a href="https://github.com/FriedrichMueller" target="_blank">@Github</a>) </li>
-      <li>Oraib Megdadi (o_megd01@uni-muenster.de) (<a href="https://github.com/oraibalmegdadi" target="_blank">@Github</a>)</li>
+      <li>Dennis Wilhelm ( d.wilhelm@uni-muenster.de ) (<a href="https://github.com/dwilhelm89" target="_blank">@Github</a> )</li>
+      <li>Dustin Demuth ( dustin.demuth@uni-muenster.de ) ( <a href="https://github.com/dustindemuth" target="_blank">@Github</a> ) </li>
+      <li>Stephanie Walter ( stephanie.walter@uni-muenster.de ) ( <a href="https://github.com/StephanieWalter" target="_blank">@Github</a> ) </li>
+      <li>Friedrich Müller ( f_muel25@uni-muenster.de ) ( <a href="https://github.com/FriedrichMueller" target="_blank">@Github</a> ) </li>
+      <li>Oraib Megdadi ( o_megd01@uni-muenster.de ) ( <a href="https://github.com/oraibalmegdadi" target="_blank">@Github</a> )</li>
       </ul>
       <h2><a name="installation" class="anchor"></a>Installation</h2> 
         To run the website on your own you have to install a webserver. We suggest to use an <a href="http://httpd.apache.org/" target="_blank">Apache2</a> webserver with a <a href="http://php.net/manual/en/book.apache.php" target="_blank">PHP5</a> extension. <br>
@@ -101,6 +102,7 @@
         </ul>
         <li>assets</li>
         <ul>
+            <li>includes (server-side code, responsible for RESTful connection as well as login- and language sessions)</li>
             <li>css (Twitter Bootstrap and custom CSS files</li>
             <li>js (javascript of libraries)</li>
             <li>font (used fonts)</li>
@@ -169,9 +171,45 @@
             <li>Requesting new passwords</li>
             <li>Better overall statistics (total length of a route in Km, total gas consumption, etc.)</li>
         </ul>
+        <li>Fix open <a href="https://github.com/enviroCar/enviroCar-www/issues?state=open" target="_blank">issues</a> on Github
       </ul>
       <br>
+      <h2><a name="serverinformation" class="anchor"></a>Server information</h2>
+        <b>Validity of the x.509 certificates:</b><br>
+      The SSL certificates of the servers will expire on the following dates:
+      <ul>
+        <li>envirocar.org (startSSL) (0x17919)</li>
+            <ul>
+                <li>Not Before: Jun 24 16:39:13 2013 GMT</li>
+                <li>Not After : Jun 25 22:33:35 2015 GMT</li>
+            </ul>
+        <li>giv-cario.uni-muenster.de (WWUCA) (0x15cc18e8748a72)</li>
+        <ul>
+            <li>Not Before: Jun  3 13:34:16 2013 GMT</li>
+            <li>Not After : Jun  2 13:34:16 2018 GMT</li>
+        </ul>
+        <li>giv-car.uni-muenster.de (WWUCA) (0x15cc1efdc3cc7a)</li>
+        <ul>
+            <li>Not Before: Jun  3 14:00:13 2013 GMT</li>
+            <li>Not After : Jun  2 14:00:13 2018 GMT</li>
+        </ul>
+       </ul>
+       <br>
+       The certificates AND their private keys are needed for the encryption of the connections between client and website and website and server. <br>
+       Certificates and Keys can be found on the corresponding servers.<br><br>
+        
+        
+       <b>Name-based VirtualHosts</b><br>
+       The apache-httpd routes the visitor to different realms. This is done by using Virtual Hosts look here for more documentation <a href="https://httpd.apache.org/docs/2.0/en/vhosts/name-based.html">documentation</a>. <br><br>
+              
+       <p>
+           Contact <a href="mailto:envirocar@demuth.mobi">Dustin</a> for more Details.<br>
+       </p>
+        
+      
     </div>
+    
+
 
 
   </body>
