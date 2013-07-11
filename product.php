@@ -54,7 +54,9 @@ foreach($roads as $road){
 		
 			//if only one measurement exists it can be directly inserted into the database
 			if($measurementCount == 1){
-				insertToDb($road['osm_id'], $coord, $measurements[0]['properties']['phenomenons']['Speed']['value'],$measurements[0]['properties']['phenomenons']['CO2']['value'], $measurementCount, $segment);
+                if(isset($measurements[0]['properties']['phenomenons']['Speed']['value']) && isset($measurements[0]['properties']['phenomenons']['CO2']['value'])){
+                    insertToDb($road['osm_id'], $coord, $measurements[0]['properties']['phenomenons']['Speed']['value'],$measurements[0]['properties']['phenomenons']['CO2']['value'], $measurementCount, $segment);
+                }
 			} 
 			
 			else if($measurementCount > 1){
@@ -97,10 +99,12 @@ foreach($roads as $road){
 
 //Inserts the aggregated values into the database. If the values road segment already exists, the values will be updated
 function insertToDb($osm_id, $coords, $speed, $co2, $count, $segment){
+    if(isset($osm_id) && isset($coords) && isset($speed) && isset($co2) && isset($count) && isset($segment)){
 $query = "UPDATE tracks SET speed = ".$speed.", co2= ".$co2.", measurements = ".$count." WHERE osm_id = ".$osm_id." AND road_segment = ".$segment.";
 INSERT into tracks(speed, co2, measurements, osm_id, the_geom, road_segment) 
 	SELECT ".$speed.", ".$co2.", ".$count.", ".$osm_id.", ST_SetSRID(ST_MakePoint(".$coords[0].",".$coords[1]."), 4326),".$segment." WHERE NOT EXISTS (SELECT 1 from tracks where osm_id = ".$osm_id." AND road_segment=".$segment.");";
 query($query);
+}
 }
 
 
