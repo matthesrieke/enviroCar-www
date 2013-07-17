@@ -65,6 +65,7 @@
         <li><a href="#developers">Developers</a></li>
         <li><a href="#installation">Installation</a></li>
         <li><a href="#structure">File Structure</a></li>
+        <li><a href="#work">How to work with the website</a></li>
         <li><a href="#aggregation">Data aggregation</a></li>
         <li><a href="#outlook">Outlook</a></li>
         <li><a href="#serverinformation">Server information</a></li>
@@ -112,6 +113,13 @@
             <li>img (images used on the website)</li>
         </ul>
       </ul>
+      
+      <h2><a class="anchor" name="work"></a>How to work with the website</h2>
+      <p>As described in the <a href="structure">File structure</a> the main html files are located in the root directory. To create new pages you simply have to include the <i>header.php</i> and <i>footer.php</i> within a new php file which contain all necessary CSS and Javascript files.</p>
+      <p>For the server connection the main logic is located in the <i>/includes/connetion.php</i> directory. The RESTful methods GET and POST require a parameter specifying if an authorization is required.
+      If the parameter is true, the password and username will be retrieved from the $_SESSION variable set at the login (<i>/includes/authentification.php</i>). PUT and DELETE don't require a authorization parameter as all possible methods from the API require a user authorization.</p>
+      <p>Within the files <i>/includes/user.php</i> and <i>/includes/groups.php</i> are several function for specific API calls (e.g. getting tracks) encapsulated as HTTP GET requests which allows them to be called via Javascript (or any other language) without needing to call the php functions.</p>
+      <p>The complete server-client communication is based on those php functions as it allows to handle the user-credentials on the server instead of revealing the password on the client side.</p>
       
       <h2><a class="anchor" name="aggregation"></a>Data aggregation</h2>
       <div style="padding-left: 20px">
